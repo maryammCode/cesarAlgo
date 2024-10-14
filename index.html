@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithme de César</title>
+    <style>
+        /* Body style - dark background with soft colors */
+        body {
+            font-family: 'Trebuchet MS', sans-serif;
+            background-color: #1f1f1f;
+            color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        /* Container with shadow and rounded corners */
+        .container {
+            background-color: #333;
+            padding: 20px; /* Reduced padding for mobile */
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%; /* Increased width for better mobile viewing */
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Container hover effect for interactivity */
+        .container:hover {
+            transform: scale(1.05);
+        }
+
+        /* Sections hidden by default */
+        .section {
+            display: none;
+        }
+
+        /* Active section is displayed */
+        .active {
+            display: block;
+        }
+
+        /* Textarea style - dark with smooth borders */
+        textarea {
+            width: 80%;
+            height: 120px;
+            padding: 12px;
+            background-color: #2a2a2a;
+            color: #f0f0f0;
+            border: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            resize: none;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+            font-family: 'Trebuchet MS', sans-serif;
+        }
+
+        /* Button style with cool colors and transition effects */
+        button {
+            padding: 12px 25px;
+            margin: 10px 5px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+        }
+
+        /* Button hover effects */
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-3px);
+        }
+
+        /* Cryptanalysis results section */
+        #cryptanalysisResults {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
+            justify-content: space-between;
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 1rem; /* Larger font size for readability */
+            line-height: 1.8; /* More space between lines */
+        }
+
+        /* Style for each column in cryptanalysis results */
+        .column {
+            flex: 1 1 48%; /* Flex for responsive columns */
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        /* Bold text for "Décalage" and more spacing */
+        .column b {
+            font-weight: bold;
+        }
+
+        /* Remove background color on hover */
+        .column:hover {
+            background-color: transparent;
+        }
+
+        /* Stylish headings */
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        /* Smooth transitions for entire layout */
+        * {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Algorithme de César</h2>
+
+    <!-- Input Section -->
+    <div id="inputSection" class="section active">
+        <textarea id="textInput" placeholder="Tapez votre texte ici..."></textarea>
+        <br>
+        <button id="encryptButton" onclick="chiffrer()">Chiffrer</button>
+    </div>
+
+    <!-- Result Section -->
+    <div id="resultSection" class="section">
+        <p id="output"></p>
+        <button id="decryptButton" onclick="dechiffrer()">Déchiffrer</button>
+        <button id="cryptanalyseButton" onclick="cryptanalyse()">Cryptanalyse</button>
+        <button onclick="retour()">Retour</button>
+        <div id="cryptanalysisResults"></div>
+    </div>
+</div>
+
+<script>
+    const shift = 3;
+
+    function afficherSection(sectionId) {
+        document.querySelectorAll('.section').forEach(section => {
+            section.classList.remove('active');
+        });
+        document.getElementById(sectionId).classList.add('active');
+    }
+
+    function chiffrer() {
+        let texte = document.getElementById("textInput").value;
+        let resultat = '';
+
+        for (let i = 0; i < texte.length; i++) {
+            let charCode = texte.charCodeAt(i);
+            if (charCode >= 65 && charCode <= 90) {
+                resultat += String.fromCharCode(((charCode - 65 + shift) % 26) + 65);
+            } else if (charCode >= 97 && charCode <= 122) {
+                resultat += String.fromCharCode(((charCode - 97 + shift) % 26) + 97);
+            } else {
+                resultat += texte[i];
+            }
+        }
+
+        document.getElementById("output").textContent = "Le texte chiffré est : " + resultat;
+        afficherSection('resultSection');
+    }
+
+    function dechiffrer() {
+        let texte = document.getElementById("output").textContent.split(": ")[1];
+        let resultat = '';
+
+        for (let i = 0; i < texte.length; i++) {
+            let charCode = texte.charCodeAt(i);
+            if (charCode >= 65 && charCode <= 90) {
+                resultat += String.fromCharCode(((charCode - 65 - shift + 26) % 26) + 65);
+            } else if (charCode >= 97 && charCode <= 122) {
+                resultat += String.fromCharCode(((charCode - 97 - shift + 26) % 26) + 97);
+            } else {
+                resultat += texte[i];
+            }
+        }
+
+        document.getElementById("output").textContent = "Le texte déchiffré est : " + resultat;
+        document.getElementById("decryptButton").style.display = 'none';
+        document.getElementById("cryptanalyseButton").style.display = 'none';
+    }
+
+    function cryptanalyse() {
+        let texte = document.getElementById("output").textContent.split(": ")[1];
+        let resultats = ['', ''];
+
+        for (let dec = 1; dec < 26; dec++) {
+            let resultat = '';
+
+            for (let i = 0; i < texte.length; i++) {
+                let charCode = texte.charCodeAt(i);
+                if (charCode >= 65 && charCode <= 90) {
+                    resultat += String.fromCharCode(((charCode - 65 - dec + 26) % 26) + 65);
+                } else if (charCode >= 97 && charCode <= 122) {
+                    resultat += String.fromCharCode(((charCode - 97 - dec + 26) % 26) + 97);
+                } else {
+                    resultat += texte[i];
+                }
+            }
+
+            if (dec <= 13) {
+                resultats[0] += `<b>Décalage ${dec}:</b> ${resultat}<br>`;
+            } else {
+                resultats[1] += `<b>Décalage ${dec}:</b> ${resultat}<br>`;
+            }
+        }
+
+        document.getElementById("cryptanalysisResults").innerHTML = `
+            <div class="column">${resultats[0]}</div>
+            <div class="column">${resultats[1]}</div>
+        `;
+    }
+
+    function retour() {
+        document.getElementById("textInput").value = '';
+        document.getElementById("output").textContent = '';
+        document.getElementById("cryptanalysisResults").innerHTML = '';
+        document.getElementById("decryptButton").style.display = 'inline-block';
+        document.getElementById("cryptanalyseButton").style.display = 'inline-block';
+        afficherSection('inputSection');
+    }
+</script>
+
+</body>
+</html>
